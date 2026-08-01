@@ -8,7 +8,7 @@ Sistema de gestión y optimización de turnos médicos desarrollado en Python. E
 
 En la gestión médica, el tiempo no utilizado es irrecuperable:
 
-* **Cancelaciones tardías:** Pacientes que anulan turnos a menos de 48 horas, dejan espacios vacíos que la agenda estandar no llega a cubrir, generando pérdidas económicas e ineficiencia operativa.
+* **Cancelaciones tardías:** Pacientes que anulan turnos a menos de 48 horas, dejan espacios vacíos que la agenda estándar no llega a cubrir, generando pérdidas económicas e ineficiencia operativa.
 * **Extensión flexible de jornada:** Profesionales que disponen de sobreturnos o bloques horarios extra en el mismo día, no cuentan con un canal ágil para demandar esa oferta inmediatamente a la comunidad de pacientes.
 * **Demanda espontánea o inmediata:** Pacientes con necesidades de atención con mayor brevedad, no encuentran visibilidad de turnos liberados a último momento.
 
@@ -20,7 +20,7 @@ Un sistema de agendamiento dinámico que:
 
 1. **Detecta y publica turnos en tiempo real:** Si un turno se cancela dentro de las 48 horas, el sistema lo reconvierte automáticamente en una oferta prioritaria o de "demanda inmediata"
 2. **Soporta extensión de agenda profesional:** Permite al médico (o personal administrativo de este) habilitar turnos en cualquier momento de su jornada.
-3. **Implementa "lazy evaluation":** Para la expiración y liberación automática de turnos no confirmados, optimizando la consulta a la mase de datos sin sobrecargar la infraestructura con tareas masivas programadas.
+3. **Implementa "lazy evaluation":** Para la expiración y liberación automática de turnos no confirmados, optimizando la consulta a la base de datos sin sobrecargar la infraestructura con tareas masivas programadas.
 
 ---
 
@@ -39,7 +39,7 @@ Un sistema de agendamiento dinámico que:
 
 1. **Clonar e instalar dependencias:**
    ```bash
-   git clone [https://github.com/LautaroYuvone/healthtech-gestor-turnos.git](https://github.com/LautaroYuvone/healthtech-gestor-turnos.git)
+   git clone https://github.com/LautaroYuvone/healthtech-gestor-turnos.git
    cd healthtech-gestor-turnos
    python -m venv .venv
    # En Windows: .venv\Scripts\activate
