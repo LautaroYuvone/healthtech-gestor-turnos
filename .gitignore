@@ -1,0 +1,13 @@
+Plaintext
+# Variables de entorno confidenciales
+.env
+
+# Base de datos local
+*.db
+sobreturnos.db
+
+# Archivos temporales de Python y PyCharm
+venv/
+.venv/
+__pycache__/
+.idea/
