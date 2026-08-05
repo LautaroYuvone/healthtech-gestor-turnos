@@ -1,32 +1,36 @@
+import os
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
-import os
 from dotenv import load_dotenv
 
 import models, schemas, database
 
 # Configuración del Token
-load_dotenv() # Cargamos las variables guardadas en el archivo .env
+load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas de validez
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-# --- HASHING DE CONTRASEÑAS ---
-def verificar_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-
+# --- HASHING DE CONTRASEÑAS (NATIVO CON BCRYPT) ---
 def obtener_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    # Convertimos la contraseña a bytes y generamos el hash
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
+
+
+def vericar_password(plain_password: str, hashed_password: str) -> bool:
+    # Verificamos la contraseña en texto plano contra el hash guardado
+    plain_bytes = plain_password.encode('utf-8')
+    hashed_bytes = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(plain_bytes, hashed_bytes)
 
 
 # --- GENERACIÓN DE TOKEN JWT ---
