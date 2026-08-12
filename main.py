@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from fastapi import FastAPI, HTTPException, Depends, status
+from datetime import datetime, timezone, time, date, timedelta
+from fastapi import FastAPI, HTTPException, Depends, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from database import engine, get_db
@@ -138,15 +138,49 @@ def crear_turno(
 
 # Buscar turnos disponibles (Público)
 @app.get("/turnos", response_model=list[schemas.Turno])
-def obtener_turnos(especialidad: str | None = None, db: Session = Depends(get_db)):
+def obtener_turnos(
+    especialidad: schemas.EspecialidadMedica | None = Query(default=None, description="Seleccionar especialidad"),
+    tipo_turno: schemas.TipoTurno | None = Query(default=None, description="Filtrar por turno programado o sobreturno"),
+    medico_id: int | None = Query(default=None, description="Filtrar por ID de un médico específico"),
+    fecha_desde: datetime | None = Query(default=None, description="Fecha inicial de búsqueda"),
+    fecha_hasta: datetime | None = Query(default=None, description="Fecha límite de búsqueda"),
+    limit: int = Query(default=10, ge=1, le=100, description="Resultados por página"),
+    offset: int = Query(default=0, ge=0, description="Resultados a omitir (Paginación)"),
+    db: Session = Depends(get_db)
+):
     limpiar_turnos_expirados(db)
+
     query = db.query(models.Turno).filter(models.Turno.estado == schemas.EstadoTurno.DISPONIBLE.value)
 
+    # Filtro temporal
+    ahora = datetime.now(timezone.utc)
+    if fecha_desde:
+        dt_desde = datetime.combine(fecha_desde, time.min, tzinfo=timezone.utc)
+        query = query.filter(models.Turno.fecha_hora >= dt_desde)
+    else:
+        query = query.filter(models.Turno.fecha_hora >= ahora)
+
+    if fecha_hasta:
+        dia_siguiente = fecha_hasta + timedelta(days=1) #Creamos esta variable para incluir el día de la busqueda
+        dt_limite = datetime.combine(dia_siguiente, time.min, tzinfo=timezone.utc)
+
+        # Filtramos tod0 lo que sea estrictamente MENOR que el día siguiente
+        query = query.filter(models.Turno.fecha_hora < dt_limite)
+
+
+    # Filtro por Especialidad (Enum)
     if especialidad:
-        query = query.join(models.Medico).filter(models.Medico.especialidad.ilike(f"%{especialidad}%"))
+        query = query.join(models.Medico).filter(models.Medico.especialidad == especialidad.value)
 
-    return query.all()
+    # Filtro por Tipo de Turno (Programado vs Sobreturno)
+    if tipo_turno:
+        query = query.filter(models.Turno.tipo_turno == tipo_turno.value)
 
+    if medico_id:
+        query = query.filter(models.Turno.medico_id == medico_id)
+
+    query = query.order_by(models.Turno.fecha_hora.asc())
+    return query.offset(offset).limit(limit).all()
 
 # Solicitar turno (solo pacientes autenticados)
 @app.put("/turnos/{turno_id}/solicitar", response_model=schemas.Turno)

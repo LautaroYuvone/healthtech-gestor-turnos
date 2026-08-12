@@ -3,7 +3,7 @@ from enum import Enum
 from pydantic import BaseModel, Field, EmailStr
 
 
-# 1. ENUMS (Opciones fijas)
+# 1.1 ENUMS (Opciones fijas)
 class EstadoTurno(str, Enum):
     DISPONIBLE = "disponible" # Publicado por el médico
     PENDIENTE_CONFIRMACION = "pendiente_confirmacion" # Solicitado por el paciente
@@ -18,12 +18,27 @@ class TipoTurno(str, Enum):
     SOBRETURNO = "sobreturno"
 
 
+# 1.2 Menú desplegable de especialidades médicas:
+class EspecialidadMedica(str, Enum):
+    CLINICA_MEDICA = "Clínica Médica"
+    PEDIATRIA = "Pediatría"
+    CARDIOLOGIA = "Cardiología"
+    TRAUMATOLOGIA = "Traumatología"
+    GINECOLOGIA = "Ginecología y Obstetricia"
+    DERMATOLOGIA = "Dermatología"
+    OFTALMOLOGIA = "Oftalmología"
+    NEUROLOGIA = "Neurología"
+    PSIQUIATRIA = "Psiquiatría"
+    ODONTOLOGIA = "Odontología"
+    OTORRINOLARINGOLOGIA = "Otorrinolaringología"
+    GASTROENTEROLOGIA = "Gastroenterología"
+
 # ENTIDADES INDEPENDIENTES
 
 # 2. MÉDICOS
 class MedicoBase(BaseModel):
     nombre: str
-    especialidad: str
+    especialidad: EspecialidadMedica
     matricula: str
     direccion_consultorio: str
     localidad: str = "Rosario"
