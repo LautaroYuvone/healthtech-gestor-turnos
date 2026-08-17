@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 
 
 # 1.1 ENUMS (Opciones fijas)
@@ -49,8 +49,7 @@ class MedicoCreate(MedicoBase):
 
 class Medico(MedicoBase):
     id: int
-    class Config:
-        from_attributes = True # Permite mapear modelos de SQLAlchemy a Pydantic
+    model_config = ConfigDict(from_attributes=True) # Permite mapear modelos de SQLAlchemy a Pydantic
 
 # 3. PACIENTES
 class PacienteBase(BaseModel):
@@ -63,8 +62,7 @@ class PacienteCreate(PacienteBase):
 
 class Paciente(PacienteBase):
     id: int
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # 4. TURNOS
@@ -81,8 +79,7 @@ class Turno(BaseModel):
     medico: Medico | None = None
     paciente: Paciente | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # 5. TOKEN Y AUTENTICACIÓN

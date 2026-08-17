@@ -34,6 +34,15 @@ def limpiar_turnos_expirados(db: Session, minutos_limite: int = 2):
     db.commit()
 
 
+# VERIFICAR EL ESTADO DE LA API
+@app.get("/health", tags=["Sistema"])
+def health_check():
+    return {
+        "status": "ok",
+        "servicio": "Z - Sobreturno API",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 # AUTENTICACIÓN Y LOGIN (TOKEN JWT)
 
 @app.post("/token", response_model=schemas.Token)
