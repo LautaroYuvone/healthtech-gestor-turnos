@@ -32,19 +32,46 @@ Un sistema de agendamiento dinámico que:
 * **Base de Datos:** SQLAlchemy / SQLite
 * **Validación:** Pydantic (Schemas)
 * **Arquitectura:** Modular (Modelos, Esquemas, Auth y Base de Datos)
+* **Seguridad:** JWT (python-jose), Hashing (bcrypt, OAuth2 Bearer Tokens)
+* **Testing Automatizado:** pytest, httpx (TestClient)
+
+---
+
+## Endpoints Principales
+
+* **POST /token:** Autenticación unificada y generación de Token JWT.
+* **POST /medicos & POST /pacientes:** Registro con claves encriptadas
+* **GET /turnos:** Buscador de turnos con filtros por fecha, especialidad, tipo de turno y paginación.
+* **POST /turnos:** Publicación de turnos (solo médicos autenticados)
+* **PUT /turnos/{id}/solicitar:** Solicitud de reserva de sobreturno (solo pacientes autenticados).
+* **PUT /turnos/{id}/responder:** Confirmación/rechazo de turnos (solo médico titular del turno)
+* **GET /health**: Endpoint de monitoreo y disponibilidad del servicio de la API.
 
 ---
 
 ## 🚀 Instrucciones de Ejecución
+    
+```bash
 
-1. **Clonar e instalar dependencias:**
-   ```bash
-   git clone https://github.com/LautaroYuvone/healthtech-gestor-turnos.git
-   cd healthtech-gestor-turnos
-   python -m venv .venv
-   # En Windows: .venv\Scripts\activate
-   # En Linux/Mac: source .venv/bin/activate
-   pip install fastapi uvicorn sqlalchemy pydantic
+# 1. Clonar repositorio y crear entorno virtual
+git clone https://github.com/LautaroYuvone/healthtech-gestor-turnos.git
+cd healthtech-gestor-turnos
+python -m venv .venv
+# En Windows: .venv\Scripts\activate
+# En Linux/Mac: source .venv/bin/activate
+
+# 2. Instalar dependencias congeladas
+pip install -r requirements.txt
+
+# 3. Configurar variables de entorno
+cp .env.example .env    # En Windows: copy .env.example .env
+
+# 4. Iniciar servidor de desarrollo
+fastapi dev main.py
+
+# 5. Ejecutar suite de pruebas
+pytest
+```
 
 ---
 
@@ -52,12 +79,14 @@ Un sistema de agendamiento dinámico que:
 
 ```text
 healthtech-gestor-turnos/
-│
-├── main.py        # Lógica principal y endpoints
-├── models.py      # Modelos ORM (Pacientes, Profesionales, Turnos, Huecos)
-├── schemas.py     # Validación de datos con Pydantic
-├── database.py    # Conexión a base de datos y sesiones
-├── auth.py        # Módulo de seguridad, hashing y emisión de JWT
-└── .gitignore     # Exclusión de archivos sensibles y base de datos local
-
+├── main.py            # Endpoints, lógica de negocio y máquina de estados
+├── models.py          # Modelos relacionales ORM (SQLAlchemy)
+├── schemas.py         # Esquemas de validación y Enums (Pydantic v2)
+├── database.py        # Conexión al motor SQLite y gestión de sesiones
+├── auth.py            # Seguridad, hashing con bcrypt y tokens JWT
+├── test_main.py       # Suite de pruebas automatizadas (pytest)
+├── requirements.txt   # Dependencias congeladas del entorno
+├── .env.example       # Plantilla pública de variables de entorno
+└── .gitignore         # Exclusión de base de datos local y secretos
+```
 
